@@ -1,18 +1,17 @@
-FROM ubuntu:14.04
+FROM php:7.1-cli
+COPY . /phpjoern
+WORKDIR /phpjoern
+
 RUN apt-get update && apt-get install -y \
     gcc \
     libxml2-dev \
     make \
     autoconf \
     libtool
-ADD php-7.0.0 /tmp/php-7.0.0
-WORKDIR /tmp/php-7.0.0
-RUN autoconf
-RUN ./configure --prefix=/tmp/php-7.0.0/output/
+
+COPY php.ini /usr/local/etc/php/php.ini
+WORKDIR php-ast
+RUN phpize
+RUN ./configure --with-php-config=/usr/local/bin/php-config
 RUN make && make install
-RUN cp /tmp/php-7.0.0/php.ini-development /tmp/php-7.0.0/output/lib/php.ini
-WORKDIR /tmp/php-7.0.0/php-ast
-RUN /tmp/php-7.0.0/output/bin/phpize
-RUN ./configure --with-php-config=/tmp/php-7.0.0/output/bin/php-config
-RUN make && make install
-WORKDIR /tmp/php-7.0.0/phpjoern
+WORKDIR /phpjoern
